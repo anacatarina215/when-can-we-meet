@@ -257,7 +257,7 @@ body::before {
         <input class="setup-input" id="create-my-name" placeholder="Your name…" maxlength="20" autocomplete="off"/>
       </div>
       <div id="create-error" class="error-msg"></div>
-      <button class="setup-btn" id="create-btn" onclick="createEvent()">Create Event →</button>
+      <button class="setup-btn" id="create-btn" onclick="wcwmCreateEvent()">Create Event →</button>
     </div>
 
     <!-- JOIN WITH CODE -->
@@ -299,7 +299,7 @@ body::before {
       </div>
     </div>
     <div id="join-error" class="error-msg"></div>
-    <button class="setup-btn" id="join-btn" onclick="joinEvent()">Join →</button>
+    <button class="setup-btn" id="join-btn" onclick="wcwmJoinEvent()">Join →</button>
     <div style="margin-top:1rem;">
       <a href="?" style="font-size:12px; color:var(--muted); text-decoration:underline;">← Create a new event</a>
     </div>
@@ -364,8 +364,8 @@ body::before {
       <span id="sync-label">Connecting…</span>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn" style="font-size:12px;padding:5px 12px;" onclick="switchUser()">Switch user</button>
-      <button class="btn danger" style="font-size:12px;padding:5px 12px;" onclick="leaveEvent()">Leave event</button>
+      <button class="btn" style="font-size:12px;padding:5px 12px;" onclick="wcwmSwitchUser()">Switch user</button>
+      <button class="btn danger" style="font-size:12px;padding:5px 12px;" onclick="wcwmLeaveEvent()">Leave event</button>
     </div>
   </div>
 </div>
@@ -507,7 +507,7 @@ function switchTab(tab){
 // ═══════════════════════════════════════════════════════
 //  CREATE EVENT
 // ═══════════════════════════════════════════════════════
-async function createEvent(){
+async function wcwmCreateEvent(){
   const eName = document.getElementById('create-event-name').value.trim();
   const ePass = document.getElementById('create-event-pass').value.trim();
   const uName = document.getElementById('create-my-name').value.trim();
@@ -569,7 +569,7 @@ async function joinWithCode(){
 let pendingEventId = null;
 let pendingEventName = null;
 
-async function joinEvent(){
+async function wcwmJoinEvent(){
   const uName = document.getElementById('join-name').value.trim();
   const ePass = document.getElementById('join-pass').value.trim();
   const err   = document.getElementById('join-error');
@@ -715,7 +715,7 @@ function render(){
     people.forEach(p=>{
       const c=COLORS[p.colorIdx];
       const isMe=p.key===nameKey(myName);
-      whoHtml+=`<div class="person-chip${isMe?' you-chip':''}" style="background:${c.fill};border-color:${c.border};color:${c.text};" ${isMe?'onclick="switchUser()" title="Switch user"':''}>
+      whoHtml+=`<div class="person-chip${isMe?' you-chip':''}" style="background:${c.fill};border-color:${c.border};color:${c.text};" ${isMe?'onclick="wcwmSwitchUser()" title="Switch user"':''}>
         <div class="pdot" style="background:${c.dot};"></div>${p.name}${isMe?`<span class="you-badge">you</span>`:''}
       </div>`;
     });
@@ -769,7 +769,7 @@ function copyLink(){
 // ═══════════════════════════════════════════════════════
 //  SWITCH USER / LEAVE
 // ═══════════════════════════════════════════════════════
-function switchUser(){
+function wcwmSwitchUser(){
   // Stay in same event, just change name
   const uName = prompt('Your new name:');
   if(!uName || !uName.trim()) return;
@@ -781,7 +781,7 @@ function switchUser(){
   render();
 }
 
-function leaveEvent(){
+function wcwmLeaveEvent(){
   if(!confirm('Are you sure you want to leave this event?')) return;
   if(dbRef) dbRef.off();
   localStorage.removeItem(LOCAL_SESSION);
