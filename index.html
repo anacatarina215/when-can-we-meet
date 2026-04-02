@@ -122,8 +122,6 @@ body::before {
 .who-bar-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
 .person-chip { display: flex; align-items: center; gap: 7px; padding: 6px 13px; border-radius: 999px; border: 1.5px solid; font-size: 13px; font-weight: 500; transition: all 0.15s; cursor: default; }
 .person-chip .pdot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.you-chip { cursor: pointer; }
-.you-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 .you-badge { font-size: 10px; background: var(--accent); color: white; padding: 1px 6px; border-radius: 999px; margin-left: 2px; }
 
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.25rem; }
@@ -324,6 +322,12 @@ body::before {
     <div class="share-url" id="share-url"></div>
     <button class="share-copy-btn" onclick="copyLink()">Copy link</button>
   </div>
+  <!-- Event code bar -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.75rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:12px;color:var(--muted);font-weight:500;">🔑 Event code:</span>
+    <code id="event-code-display" style="font-size:14px;font-weight:600;letter-spacing:0.08em;color:var(--text);background:var(--surface2);padding:4px 12px;border-radius:6px;border:1px solid var(--border);"></code>
+    <span style="font-size:12px;color:var(--muted);">— share this + password so friends can join from the home page</span>
+  </div>
 
   <!-- Who bar -->
   <div class="who-bar" id="who-bar">
@@ -364,7 +368,6 @@ body::before {
       <span id="sync-label">Connecting…</span>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn" style="font-size:12px;padding:5px 12px;" onclick="wcwmSwitchUser()">Switch user</button>
       <button class="btn danger" style="font-size:12px;padding:5px 12px;" onclick="wcwmLeaveEvent()">Leave event</button>
     </div>
   </div>
@@ -705,6 +708,8 @@ function render(){
   // Share URL
   const shareUrl = location.origin + location.pathname + '?event=' + eventId;
   document.getElementById('share-url').textContent = shareUrl;
+  // Event code
+  document.getElementById('event-code-display').textContent = eventId;
 
   // Who bar
   const whoBar=document.getElementById('who-bar');
@@ -715,7 +720,7 @@ function render(){
     people.forEach(p=>{
       const c=COLORS[p.colorIdx];
       const isMe=p.key===nameKey(myName);
-      whoHtml+=`<div class="person-chip${isMe?' you-chip':''}" style="background:${c.fill};border-color:${c.border};color:${c.text};" ${isMe?'onclick="wcwmSwitchUser()" title="Switch user"':''}>
+      whoHtml+=`<div class="person-chip" style="background:${c.fill};border-color:${c.border};color:${c.text};">
         <div class="pdot" style="background:${c.dot};"></div>${p.name}${isMe?`<span class="you-badge">you</span>`:''}
       </div>`;
     });
