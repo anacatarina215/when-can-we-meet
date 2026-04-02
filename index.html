@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>When Can We Meet?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #fdf9f6;
+  --surface: #fff;
+  --surface2: #f7f2ed;
+  --border: #e8e0d8;
+  --text: #1a1410;
+  --muted: #8a7e74;
+  --accent: #c9614a;
+  --accent-light: #f5ece9;
+  --green: #4a7c59;
+  --green-light: #eaf3ee;
+  --green-mid: #b3d4bc;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: radial-gradient(circle, #c9b8a820 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+.page { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+/* ── LANDING / HOME ── */
+#landing {
+  position: fixed; inset: 0; background: var(--bg); z-index: 200;
+  display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+}
+#landing::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, #c9b8a820 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none;
+}
+.landing-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+  padding: 2.5rem; max-width: 440px; width: 100%; text-align: center;
+  position: relative; z-index: 1;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+}
+.landing-card .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+.landing-card h1 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 400; margin-bottom: 0.5rem; }
+.landing-card h1 em { font-style: italic; color: var(--accent); }
+.landing-card > p { font-size: 14px; color: var(--muted); margin-bottom: 2rem; line-height: 1.6; }
+
+.tabs { display: flex; border: 1.5px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 1.5rem; overflow: hidden; }
+.tab-btn { flex: 1; padding: 9px; font-size: 13px; font-family: inherit; font-weight: 500; border: none; background: transparent; cursor: pointer; color: var(--muted); transition: all 0.15s; }
+.tab-btn.active { background: var(--accent); color: white; }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.field-group { margin-bottom: 12px; text-align: left; }
+.field-group label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 5px; }
+.setup-input {
+  width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  padding: 11px 14px; font-size: 14px; font-family: inherit;
+  background: var(--bg); color: var(--text); outline: none;
+  transition: border-color 0.15s;
+}
+.setup-input:focus { border-color: var(--accent); }
+.setup-input::placeholder { color: var(--muted); }
+.setup-btn {
+  width: 100%; padding: 12px; border-radius: var(--radius-sm); margin-top: 4px;
+  border: none; background: var(--accent); color: white;
+  font-size: 15px; font-family: inherit; font-weight: 500; cursor: pointer;
+  transition: background 0.15s;
+}
+.setup-btn:hover { background: #b5503b; }
+.setup-btn:disabled { opacity: 0.5; cursor: default; }
+
+.divider { text-align: center; font-size: 12px; color: var(--muted); margin: 1.5rem 0; position: relative; }
+.divider::before { content:''; position:absolute; top:50%; left:0; right:0; height:1px; background:var(--border); }
+.divider span { background: var(--surface); padding: 0 10px; position: relative; }
+
+.error-msg { font-size: 12px; color: var(--accent); margin-top: 8px; min-height: 16px; text-align: center; }
+
+/* ── JOIN EVENT OVERLAY ── */
+#join-overlay {
+  position: fixed; inset: 0; background: var(--bg); z-index: 200;
+  display: none; align-items: center; justify-content: center; padding: 1.5rem;
+}
+#join-overlay.show { display: flex; }
+#join-overlay::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, #c9b8a820 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none;
+}
+.join-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+  padding: 2.5rem; max-width: 400px; width: 100%; text-align: center;
+  position: relative; z-index: 1;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+}
+.join-card .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+.join-card h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 400; margin-bottom: 0.5rem; }
+.join-card h2 em { font-style: italic; color: var(--accent); }
+.join-card p { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.5; }
+
+/* ── MAIN ── */
+.site-header { text-align: center; margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+.site-header .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+.site-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.75rem, 5vw, 2.75rem); font-weight: 400; line-height: 1.15; margin-bottom: 0.5rem; }
+.site-header h1 em { font-style: italic; color: var(--accent); }
+.site-header p { font-size: 14px; color: var(--muted); font-weight: 300; }
+.site-header .event-name-badge { display: inline-block; margin-top: 0.75rem; padding: 5px 16px; border-radius: 999px; background: var(--accent-light); color: var(--accent); font-size: 13px; font-weight: 500; border: 1px solid var(--border); }
+
+.share-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.share-url { flex: 1; font-size: 12px; font-family: monospace; color: var(--muted); background: var(--surface2); padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.share-copy-btn { flex-shrink: 0; padding: 7px 14px; border-radius: 6px; border: 1.5px solid var(--border); background: var(--surface); font-size: 12px; font-family: inherit; font-weight: 500; cursor: pointer; transition: all 0.15s; color: var(--text); }
+.share-copy-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+.who-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.who-bar-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.person-chip { display: flex; align-items: center; gap: 7px; padding: 6px 13px; border-radius: 999px; border: 1.5px solid; font-size: 13px; font-weight: 500; transition: all 0.15s; cursor: default; }
+.person-chip .pdot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.you-chip { cursor: pointer; }
+.you-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.you-badge { font-size: 10px; background: var(--accent); color: white; padding: 1px 6px; border-radius: 999px; margin-left: 2px; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.25rem; }
+.card-title { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+
+.active-hint { font-size: 13px; color: var(--muted); margin: -0.5rem 0 1rem 0.25rem; min-height: 20px; }
+.active-hint strong { color: var(--text); font-weight: 500; }
+
+.cal-nav { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+.nav-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; color: var(--text); }
+.nav-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.cal-nav h2 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 400; flex: 1; }
+
+.months-wrap { display: flex; flex-direction: column; gap: 2rem; }
+.month-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 500; margin-bottom: 10px; }
+.weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 3px; }
+.wday { font-size: 11px; color: var(--muted); text-align: center; padding: 2px 0; font-weight: 500; }
+.days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.day { aspect-ratio: 1; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: background 0.12s; }
+.day:hover { background: var(--surface2); }
+.day.empty { pointer-events: none; }
+.day.today .dnum { color: var(--accent); font-weight: 500; }
+.day.today::after { content:''; position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:var(--accent); }
+.day.all-free { background: var(--green-light); }
+.day.all-free:hover { background: var(--green-mid); }
+.day.all-free .dnum { color: var(--green); font-weight: 500; }
+.day.past { opacity: 0.35; pointer-events: none; }
+.dnum { font-size: 13px; color: var(--text); z-index: 1; line-height: 1; }
+.ddots { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; margin-top: 3px; }
+.ddot { width: 5px; height: 5px; border-radius: 50%; }
+.free-check { position: absolute; top: 2px; right: 3px; font-size: 9px; color: var(--green); font-weight: 600; }
+
+.free-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+.free-pill { padding: 5px 12px; border-radius: 999px; background: var(--green-light); color: var(--green); font-size: 12px; font-weight: 500; border: 1px solid var(--green-mid); }
+.no-free { font-size: 13px; color: var(--muted); padding: 0.5rem 0; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+.leg-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+.leg-swatch { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+
+.sync-status { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); margin-top: 1rem; }
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.3s; }
+.sync-dot.live { background: var(--green); animation: pulse 2s infinite; }
+.sync-dot.error { background: var(--accent); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--text); color: white; padding: 10px 20px; border-radius: 999px; font-size: 13px; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 400; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.btn { padding: 8px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+.btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.btn.danger { color: #c04a30; border-color: #c04a30; }
+.btn.danger:hover { background: #faeae7; }
+
+/* Firebase config notice */
+.notice {
+  background: #fef9e7; border: 1px solid #f5d97a; border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem; font-size: 13px; color: #6b4f00; line-height: 1.6; margin-bottom: 1.25rem;
+}
+.notice strong { font-weight: 500; }
+.notice code { background: #f5e8a0; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+.notice a { color: var(--accent); text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .page { padding: 1.25rem 1rem 3rem; }
+  .site-header h1 { font-size: 1.6rem; }
+  .landing-card { padding: 2rem 1.25rem; }
+}
+
+/* Loading spinner */
+.spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     FIREBASE SETUP NOTICE
+══════════════════════════════════════════ -->
+<div id="firebase-setup-notice" style="display:none; position:fixed; inset:0; background:rgba(26,20,16,0.7); z-index:500; align-items:center; justify-content:center; padding:1.5rem;">
+  <div style="background:var(--surface); border-radius:20px; padding:2rem; max-width:520px; width:100%; box-shadow:0 16px 60px rgba(0,0,0,0.2);">
+    <h3 style="font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:400; margin-bottom:0.5rem;">⚙️ Connect Firebase</h3>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:1.25rem; line-height:1.6;">
+      This app needs a free Firebase database to work online. Follow these steps:
+    </p>
+    <div style="font-size:13px; line-height:1.8; margin-bottom:1.5rem; color:var(--text);">
+      1. Go to <a href="https://console.firebase.google.com/" target="_blank" style="color:var(--accent);">console.firebase.google.com</a> → create a project (free)<br/>
+      2. Add a <strong>Web App</strong> → copy the config values<br/>
+      3. Enable <strong>Realtime Database</strong> → set rules to <code style="background:#f5e8a0;padding:1px 5px;border-radius:4px;font-size:11px;">.read:true, .write:true</code><br/>
+      4. Paste the values below:
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;">
+      <input id="cfg-apiKey" class="setup-input" placeholder="API Key (AIzaSy...)"/>
+      <input id="cfg-authDomain" class="setup-input" placeholder="Auth Domain (project.firebaseapp.com)"/>
+      <input id="cfg-databaseURL" class="setup-input" placeholder="Database URL (https://project-rtdb.firebaseio.com)"/>
+      <input id="cfg-projectId" class="setup-input" placeholder="Project ID"/>
+      <input id="cfg-appId" class="setup-input" placeholder="App ID (1:123456:web:abc)"/>
+    </div>
+    <div id="cfg-error" class="error-msg"></div>
+    <button class="setup-btn" onclick="saveFirebaseConfig()">Connect to Firebase →</button>
+    <p style="font-size:11px;color:var(--muted);margin-top:0.75rem;">Once configured, your settings are saved in your browser.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LANDING — Create or join an event
+══════════════════════════════════════════ -->
+<div id="landing">
+  <div class="landing-card">
+    <div class="eyebrow">Group Planner</div>
+    <h1>When can<br/><em>we meet?</em></h1>
+    <p>Create an event, share the link with your friends, and see when everyone is free.</p>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('create')">Create Event</button>
+      <button class="tab-btn" onclick="switchTab('join')">Join with Code</button>
+    </div>
+
+    <!-- CREATE -->
+    <div class="tab-panel active" id="tab-create">
+      <div class="field-group">
+        <label>Event Name</label>
+        <input class="setup-input" id="create-event-name" placeholder="E.g. John's Birthday, Summer Trip…" maxlength="40" autocomplete="off"/>
+      </div>
+      <div class="field-group">
+        <label>Event Password</label>
+        <input class="setup-input" id="create-event-pass" type="password" placeholder="Choose a password…" maxlength="30"/>
+      </div>
+      <div class="field-group">
+        <label>Your Name</label>
+        <input class="setup-input" id="create-my-name" placeholder="Your name…" maxlength="20" autocomplete="off"/>
+      </div>
+      <div id="create-error" class="error-msg"></div>
+      <button class="setup-btn" id="create-btn" onclick="createEvent()">Create Event →</button>
+    </div>
+
+    <!-- JOIN WITH CODE -->
+    <div class="tab-panel" id="tab-join">
+      <div class="field-group">
+        <label>Event Code</label>
+        <input class="setup-input" id="join-code" placeholder="Event code…" maxlength="20" autocomplete="off"/>
+      </div>
+      <div class="field-group">
+        <label>Password</label>
+        <input class="setup-input" id="join-code-pass" type="password" placeholder="Event password…" maxlength="30"/>
+      </div>
+      <div class="field-group">
+        <label>Your Name</label>
+        <input class="setup-input" id="join-code-name" placeholder="Your name…" maxlength="20" autocomplete="off"/>
+      </div>
+      <div id="join-code-error" class="error-msg"></div>
+      <button class="setup-btn" id="join-code-btn" onclick="joinWithCode()">Join →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     JOIN FROM LINK — shown when ?event= in URL
+══════════════════════════════════════════ -->
+<div id="join-overlay">
+  <div class="join-card">
+    <div class="eyebrow">Group Planner</div>
+    <h2>Join<br/><em id="join-event-title">…</em></h2>
+    <p id="join-event-desc">Enter your name and the event password to join.</p>
+    <div style="text-align:left;">
+      <div class="field-group">
+        <label>Your Name</label>
+        <input class="setup-input" id="join-name" placeholder="Your name…" maxlength="20" autocomplete="off"/>
+      </div>
+      <div class="field-group">
+        <label>Password</label>
+        <input class="setup-input" id="join-pass" type="password" placeholder="Event password…" maxlength="30"/>
+      </div>
+    </div>
+    <div id="join-error" class="error-msg"></div>
+    <button class="setup-btn" id="join-btn" onclick="joinEvent()">Join →</button>
+    <div style="margin-top:1rem;">
+      <a href="?" style="font-size:12px; color:var(--muted); text-decoration:underline;">← Create a new event</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MAIN PAGE
+══════════════════════════════════════════ -->
+<div class="page" id="main-page" style="display:none;">
+
+  <header class="site-header">
+    <div class="eyebrow">Group Planner</div>
+    <h1>When can <em>we meet?</em></h1>
+    <p>Mark your busy days — the calendar finds when everyone's free.</p>
+    <div class="event-name-badge" id="event-name-badge"></div>
+  </header>
+
+  <!-- Share bar -->
+  <div class="share-bar">
+    <span style="font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap;">🔗 Share:</span>
+    <div class="share-url" id="share-url"></div>
+    <button class="share-copy-btn" onclick="copyLink()">Copy link</button>
+  </div>
+
+  <!-- Who bar -->
+  <div class="who-bar" id="who-bar">
+    <span class="who-bar-label">Who's joining:</span>
+  </div>
+
+  <div class="active-hint" id="active-hint"></div>
+
+  <!-- Calendar -->
+  <div class="card">
+    <div class="cal-nav">
+      <button class="nav-btn" onclick="prevMonth()">&#8592;</button>
+      <h2 id="cal-title"></h2>
+      <button class="nav-btn" onclick="nextMonth()">&#8594;</button>
+    </div>
+    <div class="months-wrap" id="months-wrap"></div>
+  </div>
+
+  <!-- Legend -->
+  <div class="card" style="padding:1rem 1.5rem;">
+    <div class="legend">
+      <div class="leg-item"><div class="leg-swatch" style="background:var(--green-light);border:1px solid var(--green-mid);"></div> Everyone free</div>
+      <div class="leg-item"><div class="leg-swatch" style="border:1px solid var(--border);"></div> Click to mark busy</div>
+      <div class="leg-item" style="gap:5px;"><div style="display:flex;gap:2px;align-items:center;"><div style="width:8px;height:8px;border-radius:50%;background:#c9614a;"></div><div style="width:8px;height:8px;border-radius:50%;background:#4a79c9;"></div></div> Busy (dot = person)</div>
+    </div>
+  </div>
+
+  <!-- Free days -->
+  <div class="card" id="summary-card" style="display:none;">
+    <div class="card-title">✦ Days everyone is free (upcoming)</div>
+    <div class="free-grid" id="free-grid"></div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:0.5rem;">
+    <div class="sync-status">
+      <div class="sync-dot" id="sync-dot"></div>
+      <span id="sync-label">Connecting…</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn" style="font-size:12px;padding:5px 12px;" onclick="switchUser()">Switch user</button>
+      <button class="btn danger" style="font-size:12px;padding:5px 12px;" onclick="leaveEvent()">Leave event</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  FIREBASE CONFIG — paste your values here
+//  (Firebase Console → Project Settings → Your apps → SDK setup)
+// ═══════════════════════════════════════════════════════
+const FIREBASE_CONFIG_INLINE = {
+  apiKey: "AIzaSyB9xZ0EvkI2O0U_Ccu3lIRHymbzQauJ10Y",
+  authDomain: "when-can-we-meet-5.firebaseapp.com",
+  databaseURL: "https://when-can-we-meet-5-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "when-can-we-meet-5",
+  storageBucket: "when-can-we-meet-5.firebasestorage.app",
+  messagingSenderId: "53247006890",
+  appId: "1:53247006890:web:3774d0aa308580255518d3",
+  measurementId: "G-SQ4Y5QWTM1"
+};
+
+const LOCAL_CFG_KEY   = 'wcwm-firebase-cfg';
+const LOCAL_SESSION   = 'wcwm-session'; // {eventId, eventName, myName, passHash}
+
+const COLORS = [
+  { fill:'#fbeaf0', border:'#c9614a', dot:'#c9614a', text:'#72243e' },
+  { fill:'#e8eefb', border:'#4a79c9', dot:'#4a79c9', text:'#1e3a78' },
+  { fill:'#eeedfb', border:'#7a74d4', dot:'#7a74d4', text:'#3c3489' },
+  { fill:'#faeeda', border:'#b87c1a', dot:'#b87c1a', text:'#5c3a06' },
+  { fill:'#e1f2eb', border:'#3a8a5c', dot:'#3a8a5c', text:'#1b4d30' },
+  { fill:'#faeae7', border:'#c04a30', dot:'#c04a30', text:'#6b2012' },
+  { fill:'#f0e8fb', border:'#8a4ac9', dot:'#8a4ac9', text:'#3c1a6b' },
+  { fill:'#e8f6fb', border:'#2a8aaa', dot:'#2a8aaa', text:'#0a3a4a' },
+];
+
+const MONTHS_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const WDAYS_EN  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+// ── State ──
+let db        = null;
+let dbRef     = null;
+let myName    = null;
+let eventId   = null;
+let eventName = null;
+let allData   = {};
+let viewStart = new Date();
+viewStart = new Date(viewStart.getFullYear(), viewStart.getMonth(), 1);
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+
+// ═══════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════
+function dk(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function nameKey(n){ return n.toLowerCase().replace(/[^a-z0-9]/g,'_'); }
+function slugify(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,30); }
+
+async function hashPass(pass){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,16);
+}
+
+function generateId(){
+  return Math.random().toString(36).slice(2,8) + Math.random().toString(36).slice(2,5);
+}
+
+function toast(msg, dur=2500){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),dur);
+}
+
+function setSync(state, label){
+  const dot=document.getElementById('sync-dot');
+  const lbl=document.getElementById('sync-label');
+  if(!dot||!lbl) return;
+  dot.className='sync-dot'+(state==='live'?' live':state==='error'?' error':'');
+  lbl.textContent=label;
+}
+
+// ═══════════════════════════════════════════════════════
+//  FIREBASE CONFIG
+// ═══════════════════════════════════════════════════════
+function loadStoredConfig(){
+  // First try inline config (only if apiKey is actually filled in)
+  if(FIREBASE_CONFIG_INLINE.apiKey && FIREBASE_CONFIG_INLINE.apiKey.trim() !== '') return FIREBASE_CONFIG_INLINE;
+  // Then localStorage
+  try{ return JSON.parse(localStorage.getItem(LOCAL_CFG_KEY)||'null'); } catch(e){ return null; }
+}
+
+function saveFirebaseConfig(){
+  const cfg = {
+    apiKey:        document.getElementById('cfg-apiKey').value.trim(),
+    authDomain:    document.getElementById('cfg-authDomain').value.trim(),
+    databaseURL:   document.getElementById('cfg-databaseURL').value.trim(),
+    projectId:     document.getElementById('cfg-projectId').value.trim(),
+    appId:         document.getElementById('cfg-appId').value.trim(),
+    storageBucket: document.getElementById('cfg-projectId').value.trim()+'.appspot.com',
+    messagingSenderId: '000000000000',
+  };
+  const err = document.getElementById('cfg-error');
+  if(!cfg.apiKey || !cfg.databaseURL){ err.textContent='Please fill in at least the API Key and Database URL.'; return; }
+  err.textContent='';
+  localStorage.setItem(LOCAL_CFG_KEY, JSON.stringify(cfg));
+  document.getElementById('firebase-setup-notice').style.display='none';
+  if(initFirebase(cfg)){
+    toast('Firebase connected successfully! ✓');
+    continueAfterFirebase();
+  }
+}
+
+function initFirebase(cfg){
+  try {
+    if(firebase.apps.length) firebase.apps.forEach(a=>{ try{a.delete();}catch(e){} });
+    const app = firebase.initializeApp(cfg);
+    db = firebase.database(app);
+    return true;
+  } catch(e){
+    console.error('Firebase init error:', e);
+    return false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════════════════════════════
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active', (i===0&&tab==='create')||(i===1&&tab==='join'));
+  });
+  document.getElementById('tab-create').classList.toggle('active', tab==='create');
+  document.getElementById('tab-join').classList.toggle('active', tab==='join');
+}
+
+// ═══════════════════════════════════════════════════════
+//  CREATE EVENT
+// ═══════════════════════════════════════════════════════
+async function createEvent(){
+  const eName = document.getElementById('create-event-name').value.trim();
+  const ePass = document.getElementById('create-event-pass').value.trim();
+  const uName = document.getElementById('create-my-name').value.trim();
+  const err   = document.getElementById('create-error');
+  err.textContent='';
+
+  if(!eName){ err.textContent='Give the event a name.'; return; }
+  if(!ePass){ err.textContent='Set a password for the event.'; return; }
+  if(!uName){ err.textContent='Enter your name.'; return; }
+
+  const btn = document.getElementById('create-btn');
+  btn.disabled = true;
+  btn.textContent = 'Creating…';
+
+  const passHash = await hashPass(ePass);
+  const id = generateId();
+
+  // Write event metadata
+  const ref = db.ref('events/' + id);
+  try {
+    await ref.set({
+      name: eName,
+      passHash: passHash,
+      createdAt: Date.now(),
+    });
+    // Enter as first participant
+    await enterEventSession(id, eName, passHash, uName);
+  } catch(e){
+    err.textContent = 'Error creating event. Check your Firebase configuration.';
+    btn.disabled = false;
+    btn.textContent = 'Create Event →';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  JOIN WITH CODE
+// ═══════════════════════════════════════════════════════
+async function joinWithCode(){
+  const code  = document.getElementById('join-code').value.trim().toLowerCase();
+  const ePass = document.getElementById('join-code-pass').value.trim();
+  const uName = document.getElementById('join-code-name').value.trim();
+  const err   = document.getElementById('join-code-error');
+  err.textContent='';
+
+  if(!code){ err.textContent='Enter the event code.'; return; }
+  if(!ePass){ err.textContent='Enter the password.'; return; }
+  if(!uName){ err.textContent='Enter your name.'; return; }
+
+  const btn = document.getElementById('join-code-btn');
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+
+  await verifyAndJoin(code, ePass, uName, err, btn, 'Join →');
+}
+
+// ═══════════════════════════════════════════════════════
+//  JOIN FROM LINK
+// ═══════════════════════════════════════════════════════
+let pendingEventId = null;
+let pendingEventName = null;
+
+async function joinEvent(){
+  const uName = document.getElementById('join-name').value.trim();
+  const ePass = document.getElementById('join-pass').value.trim();
+  const err   = document.getElementById('join-error');
+  err.textContent='';
+
+  if(!uName){ err.textContent='Enter your name.'; return; }
+  if(!ePass){ err.textContent='Enter the password.'; return; }
+
+  const btn = document.getElementById('join-btn');
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+
+  await verifyAndJoin(pendingEventId, ePass, uName, err, btn, 'Join →');
+}
+
+async function verifyAndJoin(id, pass, uName, errEl, btn, btnLabel){
+  try {
+    const snap = await db.ref('events/'+id).get();
+    if(!snap.exists()){ errEl.textContent='Event not found.'; btn.disabled=false; btn.textContent=btnLabel; return; }
+    const evt = snap.val();
+    const passHash = await hashPass(pass);
+    if(passHash !== evt.passHash){ errEl.textContent='Incorrect password.'; btn.disabled=false; btn.textContent=btnLabel; return; }
+    await enterEventSession(id, evt.name, evt.passHash, uName);
+  } catch(e){
+    errEl.textContent='Connection error. Please try again.';
+    btn.disabled=false; btn.textContent=btnLabel;
+  }
+}
+
+async function enterEventSession(id, eName, passHash, uName){
+  eventId   = id;
+  eventName = eName;
+  myName    = uName;
+
+  // Save session
+  localStorage.setItem(LOCAL_SESSION, JSON.stringify({eventId:id, eventName:eName, myName:uName, passHash}));
+
+  // Write participant presence
+  const nk = nameKey(uName);
+  await db.ref(`events/${id}/participants/${nk}/displayName`).set(uName);
+
+  // Start listening
+  startListening();
+}
+
+// ═══════════════════════════════════════════════════════
+//  REALTIME LISTENER
+// ═══════════════════════════════════════════════════════
+function startListening(){
+  if(dbRef) dbRef.off();
+  dbRef = db.ref(`events/${eventId}/participants`);
+  dbRef.on('value', snap=>{
+    allData = snap.val() || {};
+    render();
+    setSync('live','Live — changes sync instantly');
+  }, err=>{
+    setSync('error','Sync error');
+  });
+
+  // Show main page
+  document.getElementById('landing').style.display='none';
+  document.getElementById('join-overlay').classList.remove('show');
+  document.getElementById('main-page').style.display='';
+}
+
+// ═══════════════════════════════════════════════════════
+//  TOGGLE DAY
+// ═══════════════════════════════════════════════════════
+function toggleDay(y,m,d){
+  if(!myName || !dbRef) return;
+  const k  = dk(y,m,d);
+  const nk = nameKey(myName);
+  const isBusy = !!(allData[nk] && allData[nk].busy && allData[nk].busy[k]);
+  db.ref(`events/${eventId}/participants/${nk}/displayName`).set(myName);
+  db.ref(`events/${eventId}/participants/${nk}/busy/${k}`).set(isBusy ? null : true);
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════
+function getPeople(){
+  return Object.values(allData)
+    .filter(v=>v&&v.displayName)
+    .map((v,i)=>({ name:v.displayName, key:nameKey(v.displayName), colorIdx:i%COLORS.length, busy:v.busy||{} }));
+}
+
+function buildMonth(people, y, m){
+  const first=new Date(y,m,1).getDay();
+  const days=new Date(y,m+1,0).getDate();
+  let h=`<div class="month-block"><div class="month-name">${MONTHS_EN[m]} ${y}</div>`;
+  h+=`<div class="weekdays">${WDAYS_EN.map(d=>`<div class="wday">${d}</div>`).join('')}</div>`;
+  h+=`<div class="days-grid">`;
+  for(let i=0;i<first;i++) h+=`<div class="day empty"></div>`;
+  for(let d=1;d<=days;d++){
+    const date=new Date(y,m,d); date.setHours(0,0,0,0);
+    const k=dk(y,m,d);
+    const isPast=date<TODAY;
+    const isToday=date.getTime()===TODAY.getTime();
+    const busyPeople=people.filter(p=>p.busy[k]);
+    const allFree=people.length>=2 && busyPeople.length===0 && !isPast;
+    let cls='day'+(isToday?' today':'')+(allFree?' all-free':'')+(isPast?' past':'');
+    const dots=busyPeople.length?`<div class="ddots">${busyPeople.map(p=>{const c=COLORS[p.colorIdx];return`<div class="ddot" style="background:${c.dot}" title="${p.name} is busy"></div>`;}).join('')}</div>`:'';
+    const check=allFree?`<span class="free-check">✓</span>`:'';
+    h+=`<div class="${cls}" onclick="toggleDay(${y},${m},${d})" title="${MONTHS_EN[m]} ${d}">${check}<span class="dnum">${d}</span>${dots}</div>`;
+  }
+  h+=`</div></div>`;
+  return h;
+}
+
+function getFreeDays(people){
+  const free=[];
+  for(let mi=0;mi<3;mi++){
+    const y=viewStart.getFullYear()+Math.floor((viewStart.getMonth()+mi)/12);
+    const m=(viewStart.getMonth()+mi)%12;
+    const days=new Date(y,m+1,0).getDate();
+    for(let d=1;d<=days;d++){
+      const date=new Date(y,m,d); date.setHours(0,0,0,0);
+      if(date<TODAY) continue;
+      const k=dk(y,m,d);
+      if(people.length>=2 && !people.some(p=>p.busy[k])) free.push({y,m,d});
+    }
+  }
+  return free.slice(0,30);
+}
+
+function render(){
+  if(!myName) return;
+  const people=getPeople();
+
+  // Event badge
+  document.getElementById('event-name-badge').textContent='📅 ' + eventName;
+
+  // Share URL
+  const shareUrl = location.origin + location.pathname + '?event=' + eventId;
+  document.getElementById('share-url').textContent = shareUrl;
+
+  // Who bar
+  const whoBar=document.getElementById('who-bar');
+  let whoHtml=`<span class="who-bar-label">Who's joining:</span>`;
+  if(!people.length){
+    whoHtml+=`<span style="font-size:13px;color:var(--muted);">Just you so far — share the link!</span>`;
+  } else {
+    people.forEach(p=>{
+      const c=COLORS[p.colorIdx];
+      const isMe=p.key===nameKey(myName);
+      whoHtml+=`<div class="person-chip${isMe?' you-chip':''}" style="background:${c.fill};border-color:${c.border};color:${c.text};" ${isMe?'onclick="switchUser()" title="Switch user"':''}>
+        <div class="pdot" style="background:${c.dot};"></div>${p.name}${isMe?`<span class="you-badge">you</span>`:''}
+      </div>`;
+    });
+  }
+  whoBar.innerHTML=whoHtml;
+
+  // Hint
+  document.getElementById('active-hint').innerHTML=`Click any day to mark it as <strong>busy for ${myName}</strong>. Click again to unmark.`;
+
+  // Cal title
+  const m2=new Date(viewStart.getFullYear(),viewStart.getMonth()+2,1);
+  document.getElementById('cal-title').textContent=`${MONTHS_EN[viewStart.getMonth()]} – ${MONTHS_EN[m2.getMonth()]} ${m2.getFullYear()}`;
+
+  // Months
+  let html='';
+  for(let i=0;i<3;i++){
+    const y=viewStart.getFullYear()+Math.floor((viewStart.getMonth()+i)/12);
+    const m=(viewStart.getMonth()+i)%12;
+    html+=buildMonth(people,y,m);
+  }
+  document.getElementById('months-wrap').innerHTML=html;
+
+  // Free days
+  const free=getFreeDays(people);
+  const sc=document.getElementById('summary-card');
+  const fg=document.getElementById('free-grid');
+  if(people.length>=2){
+    sc.style.display='';
+    fg.innerHTML=free.length
+      ? free.map(({y,m,d})=>`<div class="free-pill">${d} ${MONTHS_EN[m].slice(0,3)}</div>`).join('')
+      : `<div class="no-free">No fully free days yet — keep marking busy days!</div>`;
+  } else { sc.style.display='none'; }
+}
+
+function prevMonth(){ viewStart=new Date(viewStart.getFullYear(),viewStart.getMonth()-1,1); render(); }
+function nextMonth(){ viewStart=new Date(viewStart.getFullYear(),viewStart.getMonth()+1,1); render(); }
+
+// ═══════════════════════════════════════════════════════
+//  COPY LINK
+// ═══════════════════════════════════════════════════════
+function copyLink(){
+  const url = location.origin + location.pathname + '?event=' + eventId;
+  navigator.clipboard.writeText(url).then(()=>toast('Link copied! 🔗')).catch(()=>{
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    toast('Link copied! 🔗');
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  SWITCH USER / LEAVE
+// ═══════════════════════════════════════════════════════
+function switchUser(){
+  // Stay in same event, just change name
+  const uName = prompt('Your new name:');
+  if(!uName || !uName.trim()) return;
+  myName = uName.trim();
+  const sess = JSON.parse(localStorage.getItem(LOCAL_SESSION)||'{}');
+  sess.myName = myName;
+  localStorage.setItem(LOCAL_SESSION, JSON.stringify(sess));
+  db.ref(`events/${eventId}/participants/${nameKey(myName)}/displayName`).set(myName);
+  render();
+}
+
+function leaveEvent(){
+  if(!confirm('Are you sure you want to leave this event?')) return;
+  if(dbRef) dbRef.off();
+  localStorage.removeItem(LOCAL_SESSION);
+  location.href = location.pathname; // reload without ?event=
+}
+
+// ═══════════════════════════════════════════════════════
+//  CONTINUE AFTER FIREBASE
+// ═══════════════════════════════════════════════════════
+function continueAfterFirebase(){
+  const params = new URLSearchParams(location.search);
+  const urlEventId = params.get('event');
+
+  // Check saved session
+  let sess = null;
+  try { sess = JSON.parse(localStorage.getItem(LOCAL_SESSION)||'null'); } catch(e){}
+
+  if(urlEventId){
+    // Coming via share link
+    if(sess && sess.eventId === urlEventId){
+      // Already in this event — auto-login
+      eventId   = sess.eventId;
+      eventName = sess.eventName;
+      myName    = sess.myName;
+      startListening();
+    } else {
+      // Need to join
+      pendingEventId = urlEventId;
+      // Fetch event name to show
+      db.ref('events/'+urlEventId+'/name').get().then(snap=>{
+        if(snap.exists()){
+          pendingEventName = snap.val();
+          document.getElementById('join-event-title').textContent = snap.val();
+          document.getElementById('join-event-desc').textContent = `Enter your name and the password to join "${snap.val()}".`;
+        } else {
+          document.getElementById('join-event-title').textContent = 'event';
+          document.getElementById('join-event-desc').textContent = 'This event link was not found.';
+          document.getElementById('join-btn').disabled = true;
+        }
+      });
+      document.getElementById('landing').style.display='none';
+      document.getElementById('join-overlay').classList.add('show');
+    }
+  } else if(sess){
+    // Resuming a previous session (no URL event)
+    eventId   = sess.eventId;
+    eventName = sess.eventName;
+    myName    = sess.myName;
+    startListening();
+  } else {
+    // Show landing
+    document.getElementById('landing').style.display='flex';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+(function init(){
+  const cfg = loadStoredConfig();
+  if(cfg && cfg.apiKey && cfg.databaseURL){
+    // Hide the setup overlay — config is already baked in
+    const notice = document.getElementById('firebase-setup-notice');
+    if(notice) notice.style.display = 'none';
+    if(initFirebase(cfg)){
+      continueAfterFirebase();
+    } else {
+      if(notice) notice.style.display = 'flex';
+    }
+  } else {
+    // Show firebase config form
+    document.getElementById('firebase-setup-notice').style.display='flex';
+  }
+})();
+</script>
+</body>
+</html>
