@@ -227,7 +227,7 @@ body::before {
 </div>
 
 <!-- ══════════════════════════════════════════
-     LANDING — Create or join an event
+     LANDING - Create or join an event
 ══════════════════════════════════════════ -->
 <div id="landing">
   <div class="landing-card">
@@ -244,7 +244,7 @@ body::before {
     <div class="tab-panel active" id="tab-create">
       <div class="field-group">
         <label>Event Name</label>
-        <input class="setup-input" id="create-event-name" placeholder="E.g. John's Birthday, Summer Trip…" maxlength="40" autocomplete="off"/>
+        <input class="setup-input" id="create-event-name" placeholder="E.g. Birthday, Summer Trip…" maxlength="40" autocomplete="off"/>
       </div>
       <div class="field-group">
         <label>Event Password</label>
@@ -279,7 +279,7 @@ body::before {
 </div>
 
 <!-- ══════════════════════════════════════════
-     JOIN FROM LINK — shown when ?event= in URL
+     JOIN FROM LINK - shown when ?event= in URL
 ══════════════════════════════════════════ -->
 <div id="join-overlay">
   <div class="join-card">
@@ -312,7 +312,7 @@ body::before {
   <header class="site-header">
     <div class="eyebrow">Group Planner</div>
     <h1>When can <em>we meet?</em></h1>
-    <p>Mark your busy days — the calendar finds when everyone's free.</p>
+    <p>Mark your busy days! The calendar finds when everyone's free.</p>
     <div class="event-name-badge" id="event-name-badge"></div>
   </header>
 
@@ -326,7 +326,7 @@ body::before {
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.75rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
     <span style="font-size:12px;color:var(--muted);font-weight:500;">🔑 Event code:</span>
     <code id="event-code-display" style="font-size:14px;font-weight:600;letter-spacing:0.08em;color:var(--text);background:var(--surface2);padding:4px 12px;border-radius:6px;border:1px solid var(--border);"></code>
-    <span style="font-size:12px;color:var(--muted);">— share this + password so friends can join from the home page</span>
+    <span style="font-size:12px;color:var(--muted);">- share this + password so friends can join from the home page</span>
   </div>
 
   <!-- Who bar -->
@@ -381,7 +381,7 @@ body::before {
 
 <script>
 // ═══════════════════════════════════════════════════════
-//  FIREBASE CONFIG — paste your values here
+//  FIREBASE CONFIG - paste your values here
 //  (Firebase Console → Project Settings → Your apps → SDK setup)
 // ═══════════════════════════════════════════════════════
 const FIREBASE_CONFIG_INLINE = {
@@ -627,7 +627,7 @@ function startListening(){
   dbRef.on('value', snap=>{
     allData = snap.val() || {};
     render();
-    setSync('live','Live — changes sync instantly');
+    setSync('live','Live - changes sync instantly');
   }, err=>{
     setSync('error','Sync error');
   });
@@ -715,7 +715,7 @@ function render(){
   const whoBar=document.getElementById('who-bar');
   let whoHtml=`<span class="who-bar-label">Who's joining:</span>`;
   if(!people.length){
-    whoHtml+=`<span style="font-size:13px;color:var(--muted);">Just you so far — share the link!</span>`;
+    whoHtml+=`<span style="font-size:13px;color:var(--muted);">Just you so far - share the link!</span>`;
   } else {
     people.forEach(p=>{
       const c=COLORS[p.colorIdx];
@@ -751,7 +751,7 @@ function render(){
     sc.style.display='';
     fg.innerHTML=free.length
       ? free.map(({y,m,d})=>`<div class="free-pill">${d} ${MONTHS_EN[m].slice(0,3)}</div>`).join('')
-      : `<div class="no-free">No fully free days yet — keep marking busy days!</div>`;
+      : `<div class="no-free">No fully free days yet. Keep marking busy days!</div>`;
   } else { sc.style.display='none'; }
 }
 
@@ -807,7 +807,7 @@ function continueAfterFirebase(){
   if(urlEventId){
     // Coming via share link
     if(sess && sess.eventId === urlEventId){
-      // Already in this event — auto-login
+      // Already in this event - auto-login
       eventId   = sess.eventId;
       eventName = sess.eventName;
       myName    = sess.myName;
@@ -848,7 +848,7 @@ function continueAfterFirebase(){
 (function init(){
   const cfg = loadStoredConfig();
   if(cfg && cfg.apiKey && cfg.databaseURL){
-    // Hide the setup overlay — config is already baked in
+    // Hide the setup overlay. config is already baked in
     const notice = document.getElementById('firebase-setup-notice');
     if(notice) notice.style.display = 'none';
     if(initFirebase(cfg)){
