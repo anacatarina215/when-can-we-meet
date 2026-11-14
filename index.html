@@ -244,7 +244,7 @@ body::before {
     <div class="tab-panel active" id="tab-create">
       <div class="field-group">
         <label>Event Name</label>
-        <input class="setup-input" id="create-event-name" placeholder="E.g. John's Birthday, Summer Trip…" maxlength="40" autocomplete="off"/>
+        <input class="setup-input" id="create-event-name" placeholder="E.g. Birthday, Summer Trip…" maxlength="40" autocomplete="off"/>
       </div>
       <div class="field-group">
         <label>Event Password</label>
@@ -312,7 +312,7 @@ body::before {
   <header class="site-header">
     <div class="eyebrow">Group Planner</div>
     <h1>When can <em>we meet?</em></h1>
-    <p>Mark your busy days - the calendar finds when everyone's free.</p>
+    <p>Mark your busy days. The calendar finds when everyone's free.</p>
     <div class="event-name-badge" id="event-name-badge"></div>
   </header>
 
@@ -772,7 +772,7 @@ function render(){
     sc.style.display='';
     fg.innerHTML=free.length
       ? free.map(({y,m,d})=>`<div class="free-pill">${d} ${MONTHS_EN[m].slice(0,3)}</div>`).join('')
-      : `<div class="no-free">No fully free days yet - keep marking busy days!</div>`;
+      : `<div class="no-free">No fully free days yet. Keep marking busy days!</div>`;
   } else { sc.style.display='none'; }
 }
 
@@ -869,7 +869,7 @@ function continueAfterFirebase(){
 (function init(){
   const cfg = loadStoredConfig();
   if(cfg && cfg.apiKey && cfg.databaseURL){
-    // Hide the setup overlay - config is already baked in
+    // Hide the setup overlay. Config is already baked in
     const notice = document.getElementById('firebase-setup-notice');
     if(notice) notice.style.display = 'none';
     if(initFirebase(cfg)){
