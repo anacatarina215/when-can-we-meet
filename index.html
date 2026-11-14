@@ -150,8 +150,8 @@ body::before {
 .day.all-free .dnum { color: var(--green); font-weight: 500; }
 .day.past { opacity: 0.35; pointer-events: none; }
 .dnum { font-size: 13px; color: var(--text); z-index: 1; line-height: 1; }
-.ddots { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; margin-top: 3px; }
-.ddot { width: 5px; height: 5px; border-radius: 50%; }
+.ddots { display: flex; gap: 2px; max-width: 100%; flex-wrap: wrap; justify-content: center; margin-top: 3px; }
+.shape { display:block; flex-shrink:0; }
 .free-check { position: absolute; top: 2px; right: 3px; font-size: 9px; color: var(--green); font-weight: 600; }
 
 .free-grid { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -244,7 +244,7 @@ body::before {
     <div class="tab-panel active" id="tab-create">
       <div class="field-group">
         <label>Event Name</label>
-        <input class="setup-input" id="create-event-name" placeholder="E.g. Birthday, Summer Trip…" maxlength="40" autocomplete="off"/>
+        <input class="setup-input" id="create-event-name" placeholder="E.g. John's Birthday, Summer Trip…" maxlength="40" autocomplete="off"/>
       </div>
       <div class="field-group">
         <label>Event Password</label>
@@ -312,7 +312,7 @@ body::before {
   <header class="site-header">
     <div class="eyebrow">Group Planner</div>
     <h1>When can <em>we meet?</em></h1>
-    <p>Mark your busy days! The calendar finds when everyone's free.</p>
+    <p>Mark your busy days - the calendar finds when everyone's free.</p>
     <div class="event-name-badge" id="event-name-badge"></div>
   </header>
 
@@ -351,7 +351,7 @@ body::before {
     <div class="legend">
       <div class="leg-item"><div class="leg-swatch" style="background:var(--green-light);border:1px solid var(--green-mid);"></div> Everyone free</div>
       <div class="leg-item"><div class="leg-swatch" style="border:1px solid var(--border);"></div> Click to mark busy</div>
-      <div class="leg-item" style="gap:5px;"><div style="display:flex;gap:2px;align-items:center;"><div style="width:8px;height:8px;border-radius:50%;background:#c9614a;"></div><div style="width:8px;height:8px;border-radius:50%;background:#4a79c9;"></div></div> Busy (dot = person)</div>
+      <div class="leg-item" style="gap:5px;"><div id="legend-shapes" style="display:flex;gap:3px;align-items:center;"></div> Busy (each person has their own shape &amp; color)</div>
     </div>
   </div>
 
@@ -399,15 +399,29 @@ const LOCAL_CFG_KEY   = 'wcwm-firebase-cfg';
 const LOCAL_SESSION   = 'wcwm-session'; // {eventId, eventName, myName, passHash}
 
 const COLORS = [
-  { fill:'#fbeaf0', border:'#c9614a', dot:'#c9614a', text:'#72243e' },
-  { fill:'#e8eefb', border:'#4a79c9', dot:'#4a79c9', text:'#1e3a78' },
-  { fill:'#eeedfb', border:'#7a74d4', dot:'#7a74d4', text:'#3c3489' },
-  { fill:'#faeeda', border:'#b87c1a', dot:'#b87c1a', text:'#5c3a06' },
-  { fill:'#e1f2eb', border:'#3a8a5c', dot:'#3a8a5c', text:'#1b4d30' },
-  { fill:'#faeae7', border:'#c04a30', dot:'#c04a30', text:'#6b2012' },
-  { fill:'#f0e8fb', border:'#8a4ac9', dot:'#8a4ac9', text:'#3c1a6b' },
-  { fill:'#e8f6fb', border:'#2a8aaa', dot:'#2a8aaa', text:'#0a3a4a' },
+  { shape:'circle',   dot:'#e6194b', fill:'#fde7ec', border:'#e6194b', text:'#8f0d2c' },
+  { shape:'square',   dot:'#1f5fd6', fill:'#e6eefc', border:'#1f5fd6', text:'#123a85' },
+  { shape:'triangle', dot:'#2e9e44', fill:'#e5f5e9', border:'#2e9e44', text:'#17592a' },
+  { shape:'diamond',  dot:'#f58a1f', fill:'#fdf0e1', border:'#f58a1f', text:'#8a4a06' },
+  { shape:'star',     dot:'#8e44ad', fill:'#f1e8f7', border:'#8e44ad', text:'#54246a' },
+  { shape:'cross',    dot:'#00a6b8', fill:'#e0f5f8', border:'#00a6b8', text:'#05626d' },
+  { shape:'hexagon',  dot:'#222222', fill:'#ececec', border:'#222222', text:'#111111' },
+  { shape:'down',     dot:'#d9a400', fill:'#fdf5d9', border:'#d9a400', text:'#6b5000' },
 ];
+
+const SHAPES = {
+  circle:   '<circle cx="5" cy="5" r="4.6"/>',
+  square:   '<rect x="0.8" y="0.8" width="8.4" height="8.4" rx="0.6"/>',
+  triangle: '<polygon points="5,0.3 9.8,9.4 0.2,9.4"/>',
+  diamond:  '<polygon points="5,0 10,5 5,10 0,5"/>',
+  star:     '<polygon points="5,0 6.3,3.5 10,3.8 7.2,6.2 8.1,10 5,7.9 1.9,10 2.8,6.2 0,3.8 3.7,3.5"/>',
+  cross:    '<polygon points="3.4,0.3 6.6,0.3 6.6,3.4 9.7,3.4 9.7,6.6 6.6,6.6 6.6,9.7 3.4,9.7 3.4,6.6 0.3,6.6 0.3,3.4 3.4,3.4"/>',
+  hexagon:  '<polygon points="5,0 9.5,2.5 9.5,7.5 5,10 0.5,7.5 0.5,2.5"/>',
+  down:     '<polygon points="0.2,0.6 9.8,0.6 5,9.7"/>',
+};
+function shapeSvg(c, size=9, title=''){
+  return `<svg class="shape" width="${size}" height="${size}" viewBox="0 0 10 10" fill="${c.dot}" aria-hidden="true">${title?`<title>${title}</title>`:''}${SHAPES[c.shape]}</svg>`;
+}
 
 const MONTHS_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const WDAYS_EN  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -612,7 +626,11 @@ async function enterEventSession(id, eName, passHash, uName){
 
   // Write participant presence
   const nk = nameKey(uName);
-  await db.ref(`events/${id}/participants/${nk}/displayName`).set(uName);
+  const pRef = db.ref(`events/${id}/participants/${nk}`);
+  const pSnap = await pRef.get();
+  const upd = { displayName: uName };
+  if(!(pSnap.exists() && pSnap.val().joinedAt)) upd.joinedAt = Date.now();
+  await pRef.update(upd);
 
   // Start listening
   startListening();
@@ -656,6 +674,7 @@ function toggleDay(y,m,d){
 function getPeople(){
   return Object.values(allData)
     .filter(v=>v&&v.displayName)
+    .sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0) || a.displayName.localeCompare(b.displayName))
     .map((v,i)=>({ name:v.displayName, key:nameKey(v.displayName), colorIdx:i%COLORS.length, busy:v.busy||{} }));
 }
 
@@ -674,7 +693,7 @@ function buildMonth(people, y, m){
     const busyPeople=people.filter(p=>p.busy[k]);
     const allFree=people.length>=2 && busyPeople.length===0 && !isPast;
     let cls='day'+(isToday?' today':'')+(allFree?' all-free':'')+(isPast?' past':'');
-    const dots=busyPeople.length?`<div class="ddots">${busyPeople.map(p=>{const c=COLORS[p.colorIdx];return`<div class="ddot" style="background:${c.dot}" title="${p.name} is busy"></div>`;}).join('')}</div>`:'';
+    const dots=busyPeople.length?`<div class="ddots">${busyPeople.map(p=>shapeSvg(COLORS[p.colorIdx],8,p.name+' is busy')).join('')}</div>`:'';
     const check=allFree?`<span class="free-check">✓</span>`:'';
     h+=`<div class="${cls}" onclick="toggleDay(${y},${m},${d})" title="${MONTHS_EN[m]} ${d}">${check}<span class="dnum">${d}</span>${dots}</div>`;
   }
@@ -721,11 +740,13 @@ function render(){
       const c=COLORS[p.colorIdx];
       const isMe=p.key===nameKey(myName);
       whoHtml+=`<div class="person-chip" style="background:${c.fill};border-color:${c.border};color:${c.text};">
-        <div class="pdot" style="background:${c.dot};"></div>${p.name}${isMe?`<span class="you-badge">you</span>`:''}
+        ${shapeSvg(c,11)}${p.name}${isMe?`<span class="you-badge">you</span>`:''}
       </div>`;
     });
   }
   whoBar.innerHTML=whoHtml;
+
+  document.getElementById('legend-shapes').innerHTML=COLORS.slice(0,4).map(c=>shapeSvg(c,10)).join('');
 
   // Hint
   document.getElementById('active-hint').innerHTML=`Click any day to mark it as <strong>busy for ${myName}</strong>. Click again to unmark.`;
@@ -751,7 +772,7 @@ function render(){
     sc.style.display='';
     fg.innerHTML=free.length
       ? free.map(({y,m,d})=>`<div class="free-pill">${d} ${MONTHS_EN[m].slice(0,3)}</div>`).join('')
-      : `<div class="no-free">No fully free days yet. Keep marking busy days!</div>`;
+      : `<div class="no-free">No fully free days yet - keep marking busy days!</div>`;
   } else { sc.style.display='none'; }
 }
 
@@ -848,7 +869,7 @@ function continueAfterFirebase(){
 (function init(){
   const cfg = loadStoredConfig();
   if(cfg && cfg.apiKey && cfg.databaseURL){
-    // Hide the setup overlay. config is already baked in
+    // Hide the setup overlay - config is already baked in
     const notice = document.getElementById('firebase-setup-notice');
     if(notice) notice.style.display = 'none';
     if(initFirebase(cfg)){
